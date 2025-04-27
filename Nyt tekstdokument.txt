@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>سياسة الخصوصية - My Masjid</title>
+</head>
+<body style="font-family: Arial; line-height: 1.7; direction: rtl; max-width: 600px; margin: auto;">
+  <h1>سياسة الخصوصية – My Masjid</h1>
+  <p>تطبيق My Masjid لا يجمع أو يخزن أي بيانات شخصية.</p>
+  <p>لا يتطلب إنشاء حساب، ولا يشارك أي معلومات مع أطراف ثالثة.</p>
+  <p>جميع أوقات الصلاة تعمل محليًا من الجهاز بدون الحاجة إلى اتصال دائم بالإنترنت.</p>
+  <p>لأي استفسارات، يمكن التواصل معنا على: <strong>mymasjid@app.com</strong></p>
+</body>
+</html>

@@ -1,0 +1,9 @@
+My Masjid - Daily Prayer Times for Your Mosque
+
+My Masjid app provides accurate daily prayer times based on your location or a pre-set timetable. Includes clear Adhan and Iqama audio alerts, designed for mosque displays.
+
+✔️ Simple and clean interface
+✔️ Prayer times for the five daily prayers
+✔️ Auto Adhan & Iqama sound
+✔️ Arabic language support
+✔️ Works offline
