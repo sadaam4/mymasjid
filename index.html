@@ -805,205 +805,267 @@
   
   let lastPlayedTime = null; // ✅ أضف هذا هنا
 
-    function updateClock() {
-      const now = new Date();
-      let h = now.getHours().toString().padStart(2, '0');
-      let m = now.getMinutes().toString().padStart(2, '0');
-      let s = now.getSeconds().toString().padStart(2, '0');
-      document.getElementById("clock").innerText = `${h}:${m}:${s}`;
-    }
-    setInterval(updateClock, 1000);
-    updateClock();
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours().toString().padStart(2, '0');
+  let m = now.getMinutes().toString().padStart(2, '0');
+  let s = now.getSeconds().toString().padStart(2, '0');
+  document.getElementById("clock").innerText = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-    function getTodayKey() {
-      const today = new Date();
-      const day = today.getDate();
-      const month = today.getMonth() + 1;
-      return `${day}-${month}`;
-    }
+function getTodayKey() {
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.getMonth() + 1;
+  return `${day}-${month}`;
+}
 
-    function updatePrayerTimes() {
-  
-  const now = new Date(); // توقيت الآن
+function updatePrayerTimes() {
+const now = new Date(); 
+const key = getTodayKey();
+const times = prayertimes[key];
+if (!times) return;
 
-  const key = getTodayKey();
-  const times = prayertimes[key];
-  if (!times) return;
+let [fajr, shurooq, dhuhr, asr, maghrib, isha] = times.split(";");
 
-  const [fajr, shurooq, dhuhr, asr, maghrib, isha] = times.split(";");
-  document.querySelector(".Fajr .time").innerText = fajr;
-  document.querySelector(".Shurooq .time").innerText = shurooq;
+const today = now.getDay(); // 5 = الجمعة
+
+if (today === 5) {
+ // تعديل وقت الظهر ليكون وقت الجمعة
 document.querySelector(".Dhuhr .time").innerText = dhuhr;
+document.getElementById("nextPrayerLabel").textContent = "صلاة الجمعة : " + dhuhr;
+} else {
+document.querySelector(".Dhuhr .time").innerText = dhuhr;
+}
+
+document.querySelector(".Fajr .time").innerText = fajr;
+document.querySelector(".Shurooq .time").innerText = shurooq;
 document.querySelector(".Asr .time").innerText = asr;
 document.querySelector(".Maghrib .time").innerText = maghrib;
 document.querySelector(".Isha .time").innerText = isha;
 
+const currentMinutes = now.getHours() * 60 + now.getMinutes();
+const prayerNamesDA = ["Fajr", "Shurooq", "Dhuhr", "Asr", "Maghrib", "Isha"];
+const prayerNames = ["الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"];
+const prayerTimes = [fajr, shurooq, dhuhr, asr, maghrib, isha];
 
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
-  const prayerNamesDA = ["Fajr", "shurooq", "Dhuhr", "Asr", "Maghrib", "Isha"];
-  const prayerNames = ["الفجر", "الشروق", "الظهر", "العصر", "المغرب", "العشاء"];
-  const prayerTimes = [fajr, shurooq, dhuhr, asr, maghrib, isha];
+for (let i = 0; i < prayerTimes.length; i++) {
+const [h, m] = prayerTimes[i].split(":").map(Number);
+const prayerMinutes = h * 60 + m;
+const iqamaMinutes = prayerMinutes + 10; // زيادة 10 دقائق على الأذان
 
-  for (let i = 0; i < prayerTimes.length; i++) {
-  const [h, m] = prayerTimes[i].split(":").map(Number);
-  const prayerMinutes = h * 60 + m;
-  const iqamaMinutes = prayerMinutes + 10;
+if (currentMinutes < iqamaMinutes) {
+  const iqamaH = Math.floor(iqamaMinutes / 60);
+  const iqamaM = iqamaMinutes % 60;
+  const iqamaTime = `${iqamaH.toString().padStart(2, '0')}:${iqamaM.toString().padStart(2, '0')}`;
 
-  if (currentMinutes < iqamaMinutes) {
-    const iqamaH = Math.floor(iqamaMinutes / 60);
-    const iqamaM = iqamaMinutes % 60;
-    const iqamaTime = `${iqamaH.toString().padStart(2, '0')}:${iqamaM.toString().padStart(2, '0')}`;
-
-    const iqamaTimeDisplay = document.getElementById("iqamaTimeDisplay");
-    
+  const iqamaTimeDisplay = document.getElementById("iqamaTimeDisplay");
+  
+  if (today === 5 && prayerNames[i] === "الظهر") {
+    document.getElementById("nextPrayerLabel").textContent = "صلاة الجمعة : " + dhuhr;
+  } else {
     document.getElementById("nextPrayerLabel").textContent = `Næste Salah: ${prayerNamesDA[i]} ${prayerTimes[i]}`;
-
-
-
-    return;
   }
+
+  return;
+}
+}
+
+// بعد العشاء، الصلاة القادمة فجر
+document.querySelector(".next-prayer").innerText = `الصلاة القادمة: الفجر ${fajr}`;
 }
 
 
-  // في حال لم تدخل الحلقة (مثلاً بعد العشاء)
-  document.querySelector(".next-prayer").innerText = `الصلاة القادمة: الفجر ${fajr}`;
+ updatePrayerTimes();
+setInterval(updatePrayerTimes, 60000);
+
+function updateDates() {
+  const daysDa = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
+const monthsDa = ["januar", "februar", "marts", "april", "maj", "juni", "juli", "august", "september", "oktober", "november", "december"];
+const today = new Date();
+const dayName = daysDa[today.getDay()];
+const day = today.getDate();
+const month = monthsDa[today.getMonth()];
+const year = today.getFullYear();
+document.getElementById("date-en").innerText = `${dayName} ${day}. ${month} ${year}`;
+
+  const hijriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+    day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
+  }).format(today);
+  document.getElementById("date-ar").innerText = hijriDate;
 }
 
-     updatePrayerTimes();
-    setInterval(updatePrayerTimes, 60000);
-
-    function updateDates() {
-      const daysEn = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-      const monthsEn = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      const today = new Date();
-      const dayName = daysEn[today.getDay()];
-      const day = today.getDate();
-      const month = monthsEn[today.getMonth()];
-      const year = today.getFullYear();
-      document.getElementById("date-en").innerText = `${dayName} ${day}. ${month} ${year}`;
-
-      const hijriDate = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
-        day: 'numeric', month: 'long', year: 'numeric', weekday: 'long'
-      }).format(today);
-      document.getElementById("date-ar").innerText = hijriDate;
-    }
-
-    updateDates();
+updateDates();
 
 </script>
 
 <script>
-  
-  function startAdhanAndCountdown(prayerTimeStr) {
 
-    const today = new Date().getDay();
+function startAdhanAndCountdown(prayerTimeStr) {
+
+const today = new Date().getDay();
 if (today === 5) return; // لا تفعل شيئًا إذا كان اليوم هو الجمعة
 
 
-  const adhanAudio = document.getElementById("adhanAudio");
-  const iqamaAudio = document.getElementById("iqamaAudio");
-  const nextPrayerText = document.getElementById("nextPrayerText");
 
-  const [hours, minutes] = prayerTimeStr.split(":").map(Number);
-  const adhanTime = new Date();
-  adhanTime.setHours(hours, minutes, 0, 0);
+const adhanAudio = document.getElementById("adhanAudio");
+const iqamaAudio = document.getElementById("iqamaAudio");
+const nextPrayerText = document.getElementById("nextPrayerText");
 
-  const iqamaTime = new Date(adhanTime.getTime() + 10 * 60000);
+const [hours, minutes] = prayerTimeStr.split(":").map(Number);
+const adhanTime = new Date();
+adhanTime.setHours(hours, minutes, 0, 0);
 
+const iqamaTime = new Date(adhanTime.getTime() + 10 * 60000);
+const prayerClasses = ["Fajr", "Shurooq", "Dhuhr", "Asr", "Maghrib", "Isha"];
+const key = getTodayKey();
+const times = prayertimes[key].split(";");
+const index = times.indexOf(prayerTimeStr);
+const prayerClass = prayerClasses[index];
+const prayerBox = document.querySelector(`.prayer-box.${prayerClass}`);
 
-  // تشغيل الأذان
-  adhanAudio.play().catch(() => {});
+if (prayerBox) {
+prayerBox.style.border = "6px solid red";
+setTimeout(() => {
+  prayerBox.style.border = ""; // تعود للإعدادات الأصلية بعد 10 دقائق
+}, 10 * 60 * 1000);
+}
 
-  // عرض العد التنازلي لمدة 10 دقائق
-  const timer = setInterval(() => {
+document.getElementById("clock").classList.add("pulse"); // ← أضف هذا هنا
+// تشغيل الأذان
+adhanAudio.play().catch(() => {});
+
+// عرض العد التنازلي لمدة 10 دقائق
+const timer = setInterval(() => {
+const now = new Date();
+const diff = Math.floor((iqamaTime - now) / 1000);
+
+if (diff > 0) {
+  const min = Math.floor(diff / 60);
+  const sec = diff % 60;
+  nextPrayerText.textContent = `إقامة الصلاة بعد: ${min}:${sec.toString().padStart(2, '0')}`;
+} else {
+  clearInterval(timer);
+
+  // عرض "إقامة الصلاة الآن" لمدة دقيقتين
+  nextPrayerText.textContent = "إقامة الصلاة الآن";
+  iqamaAudio.play().catch(() => {});
+
+  setTimeout(() => {
+
+    document.getElementById("clock").classList.remove("pulse"); // ← إزالة النبض هنا ✅
+
+    // بعد دقيقتين، عرض إقامة الصلاة القادمة
+    const key = getTodayKey();
+    const times = prayertimes[key];
+    if (!times) return;
+
+    const prayerTimes = times.split(";");
     const now = new Date();
-    const diff = Math.floor((iqamaTime - now) / 1000);
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-    if (diff > 0) {
-      const min = Math.floor(diff / 60);
-      const sec = diff % 60;
-      nextPrayerText.textContent = `إقامة الصلاة بعد: ${min}:${sec.toString().padStart(2, '0')}`;
-    } else {
-      clearInterval(timer);
-
-      // عرض "إقامة الصلاة الآن" لمدة دقيقتين
-      nextPrayerText.textContent = "إقامة الصلاة الآن";
-      iqamaAudio.play().catch(() => {});
-
-      setTimeout(() => {
-        // بعد دقيقتين، عرض إقامة الصلاة القادمة
-        const key = getTodayKey();
-        const times = prayertimes[key];
-        if (!times) return;
-
-        const prayerTimes = times.split(";");
-        const now = new Date();
-        const nowMinutes = now.getHours() * 60 + now.getMinutes();
-
-        for (let i = 0; i < prayerTimes.length; i++) {
-          const [h, m] = prayerTimes[i].split(":").map(Number);
-          const prayerMinutes = h * 60 + m;
-          if (nowMinutes < prayerMinutes) {
-            const nextIqamaH = h + Math.floor((m + 10) / 60);
-            const nextIqamaM = (m + 10) % 60;
-            const nextIqama = `${nextIqamaH.toString().padStart(2, '0')}:${nextIqamaM.toString().padStart(2, '0')}`;
-            // ✅ شرط الجمعة
-    const today = new Date().getDay(); // 5 = الجمعة
-    if (today === 5) {
-      nextPrayerText.textContent = "صلاة الجمعة القادمة: 13:30"; // ← عدّل الوقت لو أردت
-    } else {
-      nextPrayerText.textContent = `إقامة الصلاة القادمة: ${nextIqama}`;
-    }
-
-    return;
-  }
+    for (let i = 0; i < prayerTimes.length; i++) {
+      const [h, m] = prayerTimes[i].split(":").map(Number);
+      const prayerMinutes = h * 60 + m;
+      if (nowMinutes < prayerMinutes) {
+        const nextIqamaH = h + Math.floor((m + 10) / 60);
+        const nextIqamaM = (m + 10) % 60;
+        const nextIqama = `${nextIqamaH.toString().padStart(2, '0')}:${nextIqamaM.toString().padStart(2, '0')}`;
+        // ✅ شرط الجمعة
+const today = new Date().getDay(); // 5 = الجمعة
+if (today === 5) {
+  nextPrayerText.textContent = "صلاة الجمعة : 13:30"; // ← عدّل الوقت لو أردت
+} else {
+  nextPrayerText.textContent = `إقامة الصلاة القادمة: ${nextIqama}`;
 }
 
-        // بعد العشاء نعرض الفجر
-        const [fajrH, fajrM] = prayerTimes[0].split(":").map(Number);
-        const fajrIqamaH = fajrH + Math.floor((fajrM + 10) / 60);
-        const fajrIqamaM = (fajrM + 10) % 60;
-        const fajrIqama = `${fajrIqamaH.toString().padStart(2, '0')}:${fajrIqamaM.toString().padStart(2, '0')}`;
-        nextPrayerText.textContent = `إقامة الصلاة القادمة: ${fajrIqama}`;
-      }, 1 * 60 * 1000); // بعد دقيقتين
-    }
-  }, 1000);
+return;
 }
+}
+
+    // بعد العشاء نعرض الفجر
+    const [fajrH, fajrM] = prayerTimes[0].split(":").map(Number);
+    const fajrIqamaH = fajrH + Math.floor((fajrM + 10) / 60);
+    const fajrIqamaM = (fajrM + 10) % 60;
+    const fajrIqama = `${fajrIqamaH.toString().padStart(2, '0')}:${fajrIqamaM.toString().padStart(2, '0')}`;
+    nextPrayerText.textContent = `(مَن صَلَّى البَرْدَيْنِ دَخَلَ الجَنَّةَ): ${fajrIqama}`;
+  }, 1 * 60 * 1000); // بعد دقيقتين
+}
+}, 1000);
+}
+
 
 
 function monitorPrayerTimes() {
-  const key = getTodayKey();
-  const times = prayertimes[key];
-  if (!times) return;
+const key = getTodayKey();
+const times = prayertimes[key];
+if (!times) return;
 
-  const prayerTimes = times.split(";");
-  const now = new Date();
+const prayerTimes = times.split(";");
+const now = new Date();
 
-  for (const time of prayerTimes) {
-    const [h, m] = time.split(":").map(Number);
-    const prayerTime = new Date();
-    prayerTime.setHours(h, m, 0, 0);
+for (const time of prayerTimes) {
+const [h, m] = time.split(":").map(Number);
+const prayerTime = new Date();
+prayerTime.setHours(h, m, 0, 0);
 
-    if (
-  now.getHours() === prayerTime.getHours() &&
-  now.getMinutes() === prayerTime.getMinutes() &&
-  now.getSeconds() === 0
+if (
+now.getHours() === prayerTime.getHours() &&
+now.getMinutes() === prayerTime.getMinutes() &&
+now.getSeconds() === 0
 ) {
 
-      if (lastPlayedTime !== time) {
-        lastPlayedTime = time;
-        startAdhanAndCountdown(time); // ✅ يتم التشغيل مرة واحدة فقط
-      }
-      break;
-    }
+  if (lastPlayedTime !== time) {
+    lastPlayedTime = time;
+    startAdhanAndCountdown(time); // ✅ يتم التشغيل مرة واحدة فقط
+  }
+  break;
+}
+}
+}
+setInterval(monitorPrayerTimes, 1000);
+</script>
+<script>
+function highlightPrayerTimes() {
+const now = new Date();
+const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+const key = getTodayKey();
+const times = prayertimes[key];
+if (!times) return;
+
+const [fajr, shurooq, dhuhr, asr, maghrib, isha] = times.split(";");
+const prayerTimes = [fajr, shurooq, dhuhr, asr, maghrib, isha];
+const prayerClasses = ["Fajr", "Shurooq", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+// إعادة جميع الإطارات إلى اللون الأزرق الافتراضي
+prayerClasses.forEach(prayer => {
+  const box = document.querySelector(`.prayer-box.${prayer}`);
+  if (box) box.style.border = "4px solid #337ab7"; // الأزرق الافتراضي
+});
+
+for (let i = 0; i < prayerTimes.length; i++) {
+  const [h, m] = prayerTimes[i].split(":").map(Number);
+  const startMinutes = h * 60 + m;
+
+  const [nextH, nextM] = (i + 1 < prayerTimes.length) 
+    ? prayerTimes[i + 1].split(":").map(Number) 
+    : [23, 59]; // آخر صلاة
+  const endMinutes = nextH * 60 + nextM;
+
+  if (currentMinutes >= startMinutes && currentMinutes < endMinutes) {
+    const box = document.querySelector(`.prayer-box.${prayerClasses[i]}`);
+    if (box) box.style.border = "6px solid red"; // أحمر وقت الصلاة
+    break;
   }
 }
-    setInterval(monitorPrayerTimes, 1000);
-  </script>
+}
 
-
-</body>
-</html>
-
+// تفعيل التحديث كل دقيقة
+highlightPrayerTimes();
+setInterval(highlightPrayerTimes, 60 * 1000);
+</script>
 </body>
 </html>
